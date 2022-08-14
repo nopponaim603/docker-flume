@@ -12,5 +12,5 @@ flume-ng agent \
   -n ${FLUME_AGENT_NAME} \
   -c ${FLUME_CONF_DIR} \
   -f ${FLUME_CONF_DIR}/flume.conf \
-  -Dflume.root.logger=INFO,console \
+  -Dflume.root.logger=DEBUG,console \
 
