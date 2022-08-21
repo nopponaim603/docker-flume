@@ -29,3 +29,25 @@ Build and run image
 
     $ docker build -t my-flume-image .
     $ docker run --detch my-flume-image
+
+
+Docker-compose setting source -> sink
+
+source:
+image: probablyfine/flume
+ports:
+- "44444:44444"
+volumes:
+- ./conf/source.conf:/opt/flume-config/flume.conf
+environment:
+- FLUME_AGENT_NAME=docker
+links:
+- "sink:sink"
+
+sink:
+image: probablyfine/flume
+volumes:
+- ./fixtures/sink.conf:/opt/flume-config/flume.conf
+- ./output:/var/tmp/output
+environment:
+- FLUME_AGENT_NAME=docker

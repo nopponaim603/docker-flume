@@ -16,7 +16,7 @@ RUN apt-get update -qq \
           | tar zxvf - -C /opt/flume --strip 1
 
 ADD start-flume.sh /opt/flume/bin/start-flume
-ADD fixtures/flume.conf /opt/flume/conf/flume.conf
+ADD ./conf/flume.conf /opt/flume/conf/flume.conf
 
 ENTRYPOINT [ "start-flume" ]
 #CMD flume-ng agent -n agent1 --conf /opt/flume/conf/flume-conf.properties
