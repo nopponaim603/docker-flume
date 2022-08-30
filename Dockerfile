@@ -1,22 +1,33 @@
 FROM debian:jessie
 MAINTAINER Alex Wilson a.wilson@alumni.warwick.ac.uk
 
+# Environment
 ENV JAVA_HOME /opt/java
 ENV PATH /opt/flume/bin:/opt/java/bin:$PATH
 ENV DEBIAN_FRONTEND noninteractive
+ENV FLUME_VERSION 1.9.0
 
-RUN apt-get update -qq \
-    && apt-get install -q -y --no-install-recommends wget \
-    && mkdir /opt/java \
-    && wget --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" -qO- \
-          http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz \
-          | tar zxvf - -C /opt/java --strip 1 \
-    && mkdir /opt/flume \
-    && wget -qO- http://archive.apache.org/dist/flume/1.8.0/apache-flume-1.8.0-bin.tar.gz \
-          | tar zxvf - -C /opt/flume --strip 1
+# wget
+RUN apt-get -y update && apt-get install -y wget \
 
-ADD start-flume.sh /opt/flume/bin/start-flume
-ADD ./conf/flume.conf /opt/flume/conf/flume.conf
+#RUN mkdir /opt/java \
+#    && wget --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" -qO- \
+#          http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz \
+#          | tar zxvf - -C /opt/java --strip 1 \
+
+# Java
+RUN apt-get install -y --no-install-recommends openjdk-8-jre-headless
+
+# Flume
+RUN cd /tmp && \
+    wget http://archive.apache.org/dist/flume/${FLUME_VERSION}/apache-flume-${FLUME_VERSION}-bin.tar.gz && \
+    tar -xvzf apache-flume-${FLUME_VERSION}-bin.tar.gz -C /usr/local && \
+    rm apache-flume-${FLUME_VERSION}-bin.tar.gz
+
+RUN cd /usr/local && ln -s apache-flume-${FLUME_VERSION}-bin flume
+
+ADD start-flume.sh /usr/local/flume/bin/start-flume
+ADD ./conf/flume.conf /usr/local/flume/conf/flume.conf
 
 ENTRYPOINT [ "start-flume" ]
 #CMD flume-ng agent -n agent1 --conf /opt/flume/conf/flume-conf.properties
